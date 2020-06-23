@@ -21,8 +21,12 @@ if ( isset( $_GET['action'] ) ):
     break;
 
     case 'signup':
-
-      signupPage();
+      if( empty( $_POST )):
+        signupPage();
+      else:
+        signupRegister($_POST);
+      endif;
+        
 
     break;
 

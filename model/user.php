@@ -39,6 +39,7 @@ class User {
 
     if( $password_confirm && $password != $password_confirm ):
       throw new Exception( 'Vos mots de passes sont différents' );
+      ///TODO: Hash password
     endif;
 
     $this->password = $password;
@@ -58,6 +59,7 @@ class User {
 
   public function getPassword() {
     return $this->password;
+      ///TODO: Hash password
   }
 
   /***********************************
