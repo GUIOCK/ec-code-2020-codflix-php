@@ -10,10 +10,10 @@ require_once( 'model/user.php' );
 
 function loginPage() {
 
-  $user     = new stdClass();
-  $user->id = isset( $_SESSION['user_id'] ) ? $_SESSION['user_id'] : false;
+  $user     = new User();
+  $user->setId(isset( $_SESSION['user_id'] ) ? $_SESSION['user_id'] : false);
 
-  if( !$user->id ):
+  if( !$user->getId() ):
     require('view/auth/loginView.php');
   else:
     require('view/homeView.php');
@@ -34,19 +34,18 @@ function login( $post ) {
   $user           = new User( $data );
   $userData       = $user->getUserByEmail();
 
-  $error_msg      = "Email ou mot de passe incorrect";
-
-  if( $userData && sizeof( $userData ) != 0 ):
-    if( $user->getPassword() == $userData['password'] ):
-
+  if( $userData && sizeof( $userData ) != 0 && $user->getPassword() == $userData['password']):
+    if($userData['isValidated']):
       // Set session
       $_SESSION['user_id'] = $userData['id'];
-
       header( 'location: index.php ');
+    else:
+      $_POST['error'] = Language::$fr['LoginWaitingConfirmationEmail'];
     endif;
+  else:
+    $_POST['error'] = Language::$fr['LoginWrongId'];
   endif;
-
-  require('view/auth/loginView.php');
+    require('view/auth/loginView.php');
 }
 
 /****************************

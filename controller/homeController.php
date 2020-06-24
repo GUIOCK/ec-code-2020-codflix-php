@@ -18,5 +18,4 @@ function homePage() {
   else:
     require('view/homeView.php');
   endif;
-
 }

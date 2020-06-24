@@ -26,9 +26,26 @@ if ( isset( $_GET['action'] ) ):
       else:
         signupRegister($_POST);
       endif;
-        
 
     break;
+
+    case 'verify':
+      $userdata = User::getUserById($_GET['id']);
+      $user = new User();
+      $user->setId($_GET['id']);
+      $user->setEmail($userdata["email"]);
+      $user->setValidationHash($userdata["validationHash"]);
+
+      if($user->getValidationHash() == $_GET['hash']):
+        $user->setIsValidated(true);
+        $_POST['error'] = Language::$fr['LoginConfirmedEmail'];
+      else:
+        $_POST['error'] = Language::$fr['LoginWrongConfirmationEmail'];
+      endif;
+      loginPage();
+
+    break;
+
 
     case 'logout':
 
@@ -39,7 +56,6 @@ if ( isset( $_GET['action'] ) ):
   endswitch;
 
 else:
-
   $user_id = isset( $_SESSION['user_id'] ) ? $_SESSION['user_id'] : false;
 
   if( $user_id ):

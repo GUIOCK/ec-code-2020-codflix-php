@@ -25,10 +25,25 @@ function signupPage() {
 * ----- SIGNUP FUNCTION -----
 ***************************/
 function signupRegister( $datas ) {
+
   $user = new User();
   $user->setEmail($datas['email']);
-  $user->setPassword($datas['password']);
+try
+{
+  $user->setPassword($datas['password'], $datas['password_confirm']);
   $user->createUser();
-  ///TODO: Create header "inscription effectué, validation du mail en attente"
-  require('view/homeView.php');
+  $emailTo = $user->getEmail();
+  $emailSubject = Language::$fr['VerifyEmailObject'];
+  $emailLink = 'http://codflix/index.php?action=verify&id=' . $user->getId() . '&hash=' . $user->getValidationHash();
+  //mail($mailTo,$mailSubject, Language::$fr['VerifyEmailBody'] . $emailLink);
+  echo($emailLink);
+  $_POST['error'] = Language::$fr['LoginWaitingConfirmationEmail'];
+  require('view/auth/loginView.php');
+}
+catch (Exception $exception)
+{
+  $_POST['error'] = $exception->getMessage();
+  require('view/auth/signupView.php');
+}
+  
 }

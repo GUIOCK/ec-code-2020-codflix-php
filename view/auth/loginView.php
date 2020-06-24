@@ -32,7 +32,7 @@
             </div>
 
             <span class="error-msg">
-              <?= isset( $error_msg ) ? $error_msg : null; ?>
+              <?= isset( $_POST['error'] ) ? $_POST['error'] : null; ?>
             </span>
           </form>
         </div>
