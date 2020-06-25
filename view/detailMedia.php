@@ -17,7 +17,7 @@
      echo('
        <div class="row">
          <div class="col-md-12">
-           <iframe frameborder="0" style="height: 200%; width: 100%; margin-bottom:50px" src="' . $media->getContent() . '"></iframe>
+           <iframe allowFullScreen="allowFullScreen" frameborder="0" style="height: 200%; width: 100%; margin-bottom:50px" src="' . $media->getContent() . '"></iframe>
          </div>
        </div>
      ');
@@ -35,7 +35,7 @@
               '.$rowContent["episodeNumber"] . ' : ' . $rowContent["episodeTitle"] . '
             </div>
             <div class="col-md-8">
-              <iframe frameborder="0" src="' . $rowContent["contentURL"] . '"></iframe>
+              <iframe allowFullScreen="allowFullScreen" frameborder="0" src="' . $rowContent["contentURL"] . '"></iframe>
             </div>
           </div>
         ');
