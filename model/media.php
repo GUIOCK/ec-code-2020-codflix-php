@@ -128,15 +128,7 @@ class Media {
     $db   = null;
 
     $mediaData = $req->fetch();
-    $media = new Media();
-    $media->setid($mediaData['id']);
-    $media->setGenreId($mediaData['genre_id']);
-    $media->setTitle($mediaData['title']);
-    $media->setType($mediaData['type']);
-    $media->setStatus($mediaData['status']);
-    $media->setReleaseDate($mediaData['release_date']);
-    $media->setSummary($mediaData['summary']);
-    $media->setTrailerUrl($mediaData['trailer_url']);
+    $media = self::arrayToObject($mediaData);
     $media->setContent();
     return $media;
   }
@@ -150,14 +142,19 @@ class Media {
     // Open database connection
     $db   = init_db();
 
-    $req  = $db->prepare( "SELECT * FROM media WHERE title = ? ORDER BY release_date DESC" );
+    $req  = $db->prepare( "SELECT * FROM media WHERE title LIKE ? ORDER BY release_date DESC" );
     $req->execute( array( '%' . $title . '%' ));
 
     // Close databse connection
     $db   = null;
 
-    return $req->fetchAll();
-
+    $resultQuery =  $req->fetchAll();
+	  $arrayResult = array();
+    foreach ($resultQuery as $itemArray):
+	    $item = self::arrayToObject($itemArray);
+      array_push($arrayResult,$item);
+    endforeach;
+    return $arrayResult;
   }
 
   public static function getMediasArray($orderBy = "release_date", $isAsc = false) {
@@ -171,20 +168,25 @@ class Media {
     $mediaData = $req->fetch();
     $medias = array();
     while(isset($mediaData) && $mediaData != null && !empty($mediaData)):
-      $media = new Media();
-      $media->setId($mediaData['id']);
-      $media->setGenreId($mediaData['genre_id']);
-      $media->setTitle($mediaData['title']);
-      $media->setType($mediaData['type']);
-      $media->setStatus($mediaData['status']);
-      $media->setReleaseDate($mediaData['release_date']);
-      $media->setSummary($mediaData['summary']);
-      $media->setStatus($mediaData['status']);
-      $media->setTrailerURL($mediaData['trailer_url']);
+      $media = self::arrayToObject($mediaData);
       array_push($medias,$media);
       $mediaData = $req->fetch();
     endwhile;
     return $medias;
+  }
+  
+  public static function arrayToObject($mediaData){
+	  $media = new Media();
+	  $media->setId($mediaData['id']);
+	  $media->setGenreId($mediaData['genre_id']);
+	  $media->setTitle($mediaData['title']);
+	  $media->setType($mediaData['type']);
+	  $media->setStatus($mediaData['status']);
+	  $media->setReleaseDate($mediaData['release_date']);
+	  $media->setSummary($mediaData['summary']);
+	  $media->setStatus($mediaData['status']);
+	  $media->setTrailerURL($mediaData['trailer_url']);
+	  return $media;
   }
 
 }

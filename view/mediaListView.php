@@ -14,8 +14,12 @@
 </div>
 
 <div class="media-list">
-    <?php $medias = Media::getMediasArray();
-    foreach( $medias as $media ): ?>
+    <?php
+    if( $search == null):
+      $medias = Media::getMediasArray();
+    endif;
+    foreach( $medias as $media ):
+    ?>
         <a class="item" href="index.php?media=<?= $media->getId(); ?>">
             <div class="video">
                 <div>
@@ -27,7 +31,6 @@
         </a>
     <?php endforeach; ?>
 </div>
-
 
 <?php $content = ob_get_clean(); ?>
 
