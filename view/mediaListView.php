@@ -14,15 +14,16 @@
 </div>
 
 <div class="media-list">
-    <?php foreach( $medias as $media ): ?>
-        <a class="item" href="index.php?media=<?= $media['id']; ?>">
+    <?php $medias = Media::getMediasArray();
+    foreach( $medias as $media ): ?>
+        <a class="item" href="index.php?media=<?= $media->getId(); ?>">
             <div class="video">
                 <div>
                     <iframe allowfullscreen="" frameborder="0"
-                            src="<?= $media['trailer_url']; ?>" ></iframe>
+                            src="<?= $media->getTrailerUrl(); ?>" ></iframe>
                 </div>
             </div>
-            <div class="title"><?= $media['title']; ?></div>
+            <div class="title"><?= $media->getTitle(); ?></div>
         </a>
     <?php endforeach; ?>
 </div>

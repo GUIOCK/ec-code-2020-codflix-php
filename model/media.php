@@ -13,11 +13,13 @@ class Media {
   protected $summary;
   protected $trailer_url;
 
-  public function __construct( $media ) {
+  public function __construct( $media = null) {
 
     $this->setId( isset( $media->id ) ? $media->id : null );
-    $this->setGenreId( $media->genre_id );
-    $this->setTitle( $media->title );
+    if($media != null):
+      $this->setGenreId( $media->genre_id );
+      $this->setTitle( $media->title );
+    endif;
   }
 
   /***************************
@@ -46,6 +48,14 @@ class Media {
 
   public function setReleaseDate( $release_date ) {
     $this->release_date = $release_date;
+  }
+
+  public function  setSummary( $summary ){
+    $this->summary = $summary;
+  }
+
+  public function setTrailerURL( $trailer_url ){
+    $this->trailer_url = $trailer_url;
   }
 
   /***************************
@@ -84,6 +94,29 @@ class Media {
     return $this->trailer_url;
   }
 
+  public static function  getMediaById( $id ){
+    $db   = init_db();
+
+    $req  = $db->prepare( "SELECT * FROM media WHERE id = ?" );
+    $req->execute( array( $id ));
+
+    // Close databse connection
+    $db   = null;
+
+    $mediaData = $req->fetch();
+    $media = new Media();
+    $media->setid($mediaData['id']);
+    $media->setGenreId($mediaData['genre_id']);
+    $media->setTitle($mediaData['title']);
+    $media->setType($mediaData['type']);
+    $media->setStatus($mediaData['status']);
+    $media->setReleaseDate($mediaData['release_date']);
+    $media->setSummary($mediaData['summary']);
+    $media->setTrailerUrl($mediaData['trailer_url']);
+    var_dump($media);
+    return $media;
+  }
+
   /***************************
   * -------- GET LIST --------
   ***************************/
@@ -101,6 +134,33 @@ class Media {
 
     return $req->fetchAll();
 
+  }
+
+  public static function getMediasArray($orderBy = "release_date", $isAsc = false) {
+    $db = init_db();
+
+    $req = $db->prepare("SELECT * FROM media ORDER BY :orderBy :order");
+    $req->execute(array(
+      "orderBy" => $orderBy,
+      "order" => $isAsc ? 'ASC' : "DESC"
+    ));
+    $mediaData = $req->fetch();
+    $medias = array();
+    while(isset($mediaData) && $mediaData != null && !empty($mediaData)):
+      $media = new Media();
+      $media->setId($mediaData['id']);
+      $media->setGenreId($mediaData['genre_id']);
+      $media->setTitle($mediaData['title']);
+      $media->setType($mediaData['type']);
+      $media->setStatus($mediaData['status']);
+      $media->setReleaseDate($mediaData['release_date']);
+      $media->setSummary($mediaData['summary']);
+      $media->setStatus($mediaData['status']);
+      $media->setTrailerURL($mediaData['trailer_url']);
+      array_push($medias,$media);
+      $mediaData = $req->fetch();
+    endwhile;
+    return $medias;
   }
 
 }

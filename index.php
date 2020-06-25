@@ -1,5 +1,4 @@
 <?php
-
 require_once( 'controller/homeController.php' );
 require_once( 'controller/loginController.php' );
 require_once( 'controller/signupController.php' );
