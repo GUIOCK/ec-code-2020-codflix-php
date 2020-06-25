@@ -34,7 +34,7 @@ try
   $user->createUser();
   $emailTo = $user->getEmail();
   $emailSubject = Language::$fr['VerifyEmailObject'];
-  $emailLink = 'http://codflix/index.php?action=verify&id=' . $user->getId() . '&hash=' . $user->getValidationHash();
+  $emailLink = 'https://localhost/cod_flix/index.php?action=verify&id=' . $user->getId() . '&hash=' . $user->getValidationHash();
   //mail($mailTo,$mailSubject, Language::$fr['VerifyEmailBody'] . $emailLink);
   echo($emailLink);
   $_POST['error'] = Language::$fr['LoginWaitingConfirmationEmail'];

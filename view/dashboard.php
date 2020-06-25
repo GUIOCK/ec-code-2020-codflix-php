@@ -18,7 +18,7 @@
         <h2 class="title">Bienvenue</h2>
         <div class="sidebar-menu">
           <ul>
-            <li class="active"><a href="/CodFlix/">Médias</a></li>
+            <li class="active"><a href="./index.php">Médias</a></li>
             <li><a href="#">Nous contacter</a></li>
             <li><a href="index.php?action=logout">Me déconnecter</a></li>
           </ul>
@@ -39,10 +39,11 @@
         <div class="content p-4">
           <?= $content; ?>
         </div>
-        <footer>Copyright Cod'Flix</footer>
+        
       </div>
+      
     </div>
-
+    <footer class="footer fixed-bottom">Copyright Cod'Flix</footer>
     <script src="public/lib/jquery/js/jquery-3.5.0.min"></script>
     <script src="public/lib/bootstrap/js/bootstrap.min.js"></script>
 

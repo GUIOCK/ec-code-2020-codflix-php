@@ -12,7 +12,8 @@ class Media {
   protected $release_date;
   protected $summary;
   protected $trailer_url;
-
+	protected $content;
+  
   public function __construct( $media = null) {
 
     $this->setId( isset( $media->id ) ? $media->id : null );
@@ -25,7 +26,7 @@ class Media {
   /***************************
   * -------- SETTERS ---------
   ***************************/
-
+	
   public function setId( $id ) {
     $this->id = $id;
   }
@@ -56,6 +57,25 @@ class Media {
 
   public function setTrailerURL( $trailer_url ){
     $this->trailer_url = $trailer_url;
+  }
+  
+  public function setContent(){
+  
+		$db = init_db();
+		$req  = $db->prepare( "SELECT * FROM media_content WHERE media_id = ? ORDER BY season_number, episode_number ASC" );
+		$req->execute( array( $this->getId() ));
+	  $contentData = $req->fetchAll();
+	  if($this->getType() == 'movie'):
+	    $this->content = $contentData[0]['content_url'];
+	  else:
+		  $this->content = array();
+		  for ($i = 0; $i < count($contentData); $i++):
+	      $this->content[$i]['episodeTitle'] = $contentData[$i]['episode_title'];
+	      $this->content[$i]['seasonNumber'] = $contentData[$i]['season_number'];
+	      $this->content[$i]['episodeNumber'] = $contentData[$i]['episode_number'];
+	      $this->content[$i]['contentURL'] = $contentData[$i]['content_url'];
+	    endfor;
+	  endif;
   }
 
   /***************************
@@ -93,6 +113,10 @@ class Media {
   public function getTrailerUrl() {
     return $this->trailer_url;
   }
+  
+  public function getContent(){
+  	return $this->content;
+  }
 
   public static function  getMediaById( $id ){
     $db   = init_db();
@@ -113,7 +137,7 @@ class Media {
     $media->setReleaseDate($mediaData['release_date']);
     $media->setSummary($mediaData['summary']);
     $media->setTrailerUrl($mediaData['trailer_url']);
-    var_dump($media);
+    $media->setContent();
     return $media;
   }
 
