@@ -12,18 +12,21 @@ class Media {
   protected $release_date;
   protected $summary;
   protected $trailer_url;
-
-  public function __construct( $media ) {
+	protected $content;
+  
+  public function __construct( $media = null) {
 
     $this->setId( isset( $media->id ) ? $media->id : null );
-    $this->setGenreId( $media->genre_id );
-    $this->setTitle( $media->title );
+    if($media != null):
+      $this->setGenreId( $media->genre_id );
+      $this->setTitle( $media->title );
+    endif;
   }
 
   /***************************
   * -------- SETTERS ---------
   ***************************/
-
+	
   public function setId( $id ) {
     $this->id = $id;
   }
@@ -46,6 +49,33 @@ class Media {
 
   public function setReleaseDate( $release_date ) {
     $this->release_date = $release_date;
+  }
+
+  public function  setSummary( $summary ){
+    $this->summary = $summary;
+  }
+
+  public function setTrailerURL( $trailer_url ){
+    $this->trailer_url = $trailer_url;
+  }
+  
+  public function setContent(){
+  
+		$db = init_db();
+		$req  = $db->prepare( "SELECT * FROM media_content WHERE media_id = ? ORDER BY season_number, episode_number ASC" );
+		$req->execute( array( $this->getId() ));
+	  $contentData = $req->fetchAll();
+	  if($this->getType() == 'movie'):
+	    $this->content = $contentData[0]['content_url'];
+	  else:
+		  $this->content = array();
+		  for ($i = 0; $i < count($contentData); $i++):
+	      $this->content[$i]['episodeTitle'] = $contentData[$i]['episode_title'];
+	      $this->content[$i]['seasonNumber'] = $contentData[$i]['season_number'];
+	      $this->content[$i]['episodeNumber'] = $contentData[$i]['episode_number'];
+	      $this->content[$i]['contentURL'] = $contentData[$i]['content_url'];
+	    endfor;
+	  endif;
   }
 
   /***************************
@@ -83,6 +113,25 @@ class Media {
   public function getTrailerUrl() {
     return $this->trailer_url;
   }
+  
+  public function getContent(){
+  	return $this->content;
+  }
+
+  public static function  getMediaById( $id ){
+    $db   = init_db();
+
+    $req  = $db->prepare( "SELECT * FROM media WHERE id = ?" );
+    $req->execute( array( $id ));
+
+    // Close databse connection
+    $db   = null;
+
+    $mediaData = $req->fetch();
+    $media = self::arrayToObject($mediaData);
+    $media->setContent();
+    return $media;
+  }
 
   /***************************
   * -------- GET LIST --------
@@ -93,14 +142,51 @@ class Media {
     // Open database connection
     $db   = init_db();
 
-    $req  = $db->prepare( "SELECT * FROM media WHERE title = ? ORDER BY release_date DESC" );
+    $req  = $db->prepare( "SELECT * FROM media WHERE title LIKE ? ORDER BY release_date DESC" );
     $req->execute( array( '%' . $title . '%' ));
 
     // Close databse connection
     $db   = null;
 
-    return $req->fetchAll();
+    $resultQuery =  $req->fetchAll();
+	  $arrayResult = array();
+    foreach ($resultQuery as $itemArray):
+	    $item = self::arrayToObject($itemArray);
+      array_push($arrayResult,$item);
+    endforeach;
+    return $arrayResult;
+  }
 
+  public static function getMediasArray($orderBy = "release_date", $isAsc = false) {
+    $db = init_db();
+
+    $req = $db->prepare("SELECT * FROM media ORDER BY :orderBy :order");
+    $req->execute(array(
+      "orderBy" => $orderBy,
+      "order" => $isAsc ? 'ASC' : "DESC"
+    ));
+    $mediaData = $req->fetch();
+    $medias = array();
+    while(isset($mediaData) && $mediaData != null && !empty($mediaData)):
+      $media = self::arrayToObject($mediaData);
+      array_push($medias,$media);
+      $mediaData = $req->fetch();
+    endwhile;
+    return $medias;
+  }
+  
+  public static function arrayToObject($mediaData){
+	  $media = new Media();
+	  $media->setId($mediaData['id']);
+	  $media->setGenreId($mediaData['genre_id']);
+	  $media->setTitle($mediaData['title']);
+	  $media->setType($mediaData['type']);
+	  $media->setStatus($mediaData['status']);
+	  $media->setReleaseDate($mediaData['release_date']);
+	  $media->setSummary($mediaData['summary']);
+	  $media->setStatus($mediaData['status']);
+	  $media->setTrailerURL($mediaData['trailer_url']);
+	  return $media;
   }
 
 }

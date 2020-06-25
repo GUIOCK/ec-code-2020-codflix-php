@@ -7,3 +7,9 @@
   --color-blue: #4b9bff;
   --color-gray: #b3b3b3;
 }
+
+.row-offset {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
