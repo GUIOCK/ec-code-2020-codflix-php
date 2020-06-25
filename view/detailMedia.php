@@ -27,7 +27,7 @@
           <h5> Saison n°'.$media->getContent()[0]["seasonNumber"].'</h5>
         </div>
       ');
-      for($episode = 0; $episode < count($media->getContent()) - 1; $episode++):
+      for($episode = 0; $episode < count($media->getContent()); $episode++):
         $rowContent = $media->getContent()[$episode];
         echo('
           <div class="row">
@@ -39,12 +39,10 @@
             </div>
           </div>
         ');
-        $nextEpisode = $media->getContent()[$episode+1]["seasonNumber"];
+        
         if(
-          $nextEpisode != null &&
-          !empty($nextEpisode) &&
-          is_numeric($nextEpisode) &&
-          $nextEpisode != $rowContent["seasonNumber"]):
+          isset($media->getContent()[$episode+1]) &&
+          $media->getContent()[$episode+1]['seasonNumber'] != $rowContent["seasonNumber"]):
           echo('
             <div class="row row-offset">
               <h5> Saison n°'.$media->getContent()[$episode+1]["seasonNumber"].'</h5>
